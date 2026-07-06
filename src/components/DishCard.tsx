@@ -9,10 +9,11 @@ interface Props {
   mealType: MealType;
   onRemove: () => void;
   onCopy: () => void;
+  onView: () => void;
   onDragStart: (payload: DragPayload) => void;
 }
 
-export function DishCard({ dish, dayIndex, mealType, onRemove, onCopy, onDragStart }: Props) {
+export function DishCard({ dish, dayIndex, mealType, onRemove, onCopy, onView, onDragStart }: Props) {
   const { t, recipeName } = useI18n();
   const nutrients = getRecipeNutrients(dish.recipeId);
 
@@ -33,8 +34,11 @@ export function DishCard({ dish, dayIndex, mealType, onRemove, onCopy, onDragSta
       }}
     >
       <div className="dish-card-header">
-        <span className="dish-card-title">{recipeName(dish.recipeId)}</span>
+        <button type="button" className="dish-card-title-btn" onClick={onView}>
+          {recipeName(dish.recipeId)}
+        </button>
         <div className="dish-card-actions">
+          <button type="button" className="btn-icon" onClick={onView} title={t.planner.viewRecipe}>ⓘ</button>
           <button type="button" className="btn-icon" onClick={onCopy} title={t.planner.copyDish}>⧉</button>
           <button type="button" className="btn-icon" onClick={onRemove} title={t.planner.removeDish}>×</button>
         </div>

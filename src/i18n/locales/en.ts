@@ -173,6 +173,13 @@ export const en: Translations = {
     suggestTitle: 'Suggest a menu',
     suggestDesc: 'Auto-fill your planner with a random balanced menu. You can edit, remove or add dishes afterwards.',
     suggestGenerate: 'Fill planner',
+    viewRecipe: 'View recipe',
+    close: 'Close',
+    nutrientsTitle: 'Nutrients per serving',
+    instructionsTitle: 'How to cook',
+    prepTimeUnit: 'min',
+    servingsUnit: 'servings',
+    tipTitle: 'Tip',
     regions: {
       european: 'European',
       asian: 'Asian',

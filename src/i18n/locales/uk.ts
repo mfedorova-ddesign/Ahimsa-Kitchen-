@@ -173,6 +173,13 @@ export const uk: Translations = {
     suggestTitle: 'Підібрати меню',
     suggestDesc: 'Автозаповнення планувальника випадковим збалансованим меню. Потім можна редагувати, видаляти та додавати страви.',
     suggestGenerate: 'Заповнити план',
+    viewRecipe: 'Переглянути рецепт',
+    close: 'Закрити',
+    nutrientsTitle: 'Нутрієнти на порцію',
+    instructionsTitle: 'Приготування',
+    prepTimeUnit: 'хв',
+    servingsUnit: 'порцій',
+    tipTitle: 'Порада',
     regions: {
       european: 'Європейська',
       asian: 'Азіатська',

@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { en } from './locales/en';
 import { ru } from './locales/ru';
 import { uk } from './locales/uk';
-import { getProductText, getRecipeText, getCuisineText } from './content';
+import { getProductText, getRecipeText, getCuisineText, getRecipeSteps } from './content';
 import type { Locale, Translations } from './types';
 
 const LOCALE_KEY = 'ahimsa-kitchen-locale';
@@ -27,6 +27,9 @@ interface I18nContextValue {
   productPortion: (id: string) => string;
   recipeName: (id: string) => string;
   recipeDescription: (id: string) => string;
+  recipeIngredientLines: (id: string) => string[];
+  recipeSteps: (id: string) => string[];
+  recipeTip: (id: string) => string | undefined;
   cuisineName: (id: string) => string;
   mealLabel: (type: string) => string;
   dayLabel: (index: number) => string;
@@ -63,6 +66,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       productPortion: (id) => getProductText(id, locale).portion,
       recipeName: (id) => getRecipeText(id, locale).name,
       recipeDescription: (id) => getRecipeText(id, locale).description,
+      recipeIngredientLines: (id) => getRecipeText(id, locale).ingredientLines,
+      recipeSteps: (id) => getRecipeSteps(id, locale),
+      recipeTip: (id) => getRecipeText(id, locale).tip,
       cuisineName: (id) => getCuisineText(id, locale),
       mealLabel: (type) => t.meals[type] ?? type,
       dayLabel: (index) => t.days[index % 7] ?? '',

@@ -16,6 +16,11 @@ export function getRecipeNutrients(recipeId: string): Nutrients {
     return { kcal: 0, proteinG: 0, fatG: 0, carbsG: 0, fiberG: 0, ironMg: 0, iodineMcg: 0, d3Mcg: 0 };
   }
 
+  if (recipe.perServing) {
+    nutrientCache.set(recipeId, recipe.perServing);
+    return recipe.perServing;
+  }
+
   const n = sumNutrients(recipeToItems(recipe));
   nutrientCache.set(recipeId, n);
   return n;
@@ -34,15 +39,15 @@ export function getComputedTags(recipe: Recipe): RecipeFilterTag[] {
   const tags: RecipeFilterTag[] = [];
 
   if (n.proteinG >= 20) tags.push('high-protein');
-  if (n.ironMg >= 5) tags.push('iron-rich');
-  if (n.iodineMcg >= 50) tags.push('iodine-rich');
-  if (n.d3Mcg >= 2) tags.push('d3-source');
+  if (n.ironMg >= 5 || recipe.tags.includes('iron')) tags.push('iron-rich');
+  if (n.iodineMcg >= 50 || recipe.tags.includes('iodine')) tags.push('iodine-rich');
+  if (n.d3Mcg >= 2 || recipe.tags.includes('d3')) tags.push('d3-source');
   if (recipe.tags.includes('vitamin-c') || recipe.ingredients.some((i) =>
     productsById.get(i.productId)?.tags.includes('vitamin-c'),
   )) tags.push('vitamin-c');
-  if (isGlutenFree(recipe)) tags.push('gluten-free');
-  if (isNoAddedSugar(recipe)) tags.push('no-added-sugar');
-  if (recipe.ingredients.length <= 5) tags.push('quick');
+  if (recipe.ingredients.length > 0 && isGlutenFree(recipe)) tags.push('gluten-free');
+  if (recipe.ingredients.length > 0 && isNoAddedSugar(recipe)) tags.push('no-added-sugar');
+  if ((recipe.prepTimeMin ?? 99) <= 20 || recipe.ingredients.length <= 5) tags.push('quick');
 
   return tags;
 }

@@ -102,6 +102,13 @@ export interface Translations {
     suggestTitle: string;
     suggestDesc: string;
     suggestGenerate: string;
+    viewRecipe: string;
+    close: string;
+    nutrientsTitle: string;
+    instructionsTitle: string;
+    prepTimeUnit: string;
+    servingsUnit: string;
+    tipTitle: string;
     regions: Record<string, string>;
     filterTags: Record<string, string>;
   };

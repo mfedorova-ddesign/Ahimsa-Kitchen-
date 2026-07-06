@@ -75,6 +75,10 @@ export interface Recipe {
   mealType: MealType;
   tags: string[];
   ingredients: RecipeIngredient[];
+  /** Per-serving nutrients from recipe card (used when ingredients are display-only) */
+  perServing?: Nutrients;
+  prepTimeMin?: number;
+  servings?: number;
 }
 
 export interface Nutrients {

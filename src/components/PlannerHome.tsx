@@ -4,6 +4,7 @@ import { GeneralDisclaimer } from './GeneralDisclaimer';
 import { DayPlannerRow } from './DayPlannerRow';
 import { RecipeSearchModal } from './RecipeSearchModal';
 import { SuggestMenuModal } from './SuggestMenuModal';
+import { RecipeDetailModal } from './RecipeDetailModal';
 import { useI18n } from '../i18n';
 import { usePlanner } from '../hooks/usePlanner';
 import type { MealType } from '../types';
@@ -38,6 +39,7 @@ export function PlannerHome() {
   const [searchTarget, setSearchTarget] = useState<SearchTarget | null>(null);
   const [showSuggest, setShowSuggest] = useState(false);
   const [copySourceDay, setCopySourceDay] = useState<number | null>(null);
+  const [viewRecipeId, setViewRecipeId] = useState<string | null>(null);
 
   function nutrientsLine(n: ReturnType<typeof getRecipeNutrients>) {
     const f = formatNutrients(n);
@@ -138,6 +140,7 @@ export function PlannerHome() {
             onAdd={(mealType) => setSearchTarget({ dayIndex: day.dayIndex, mealType })}
             onRemove={(mealType, dishId) => deleteDish(day.dayIndex, mealType, dishId)}
             onCopyDish={(mealType, dishId) => copyDish(day.dayIndex, mealType, dishId)}
+            onViewRecipe={setViewRecipeId}
             onDrop={(payload, toMeal) => dragDish(payload, day.dayIndex, toMeal)}
             onCopyDay={() => handleCopyDay(day.dayIndex)}
           />
@@ -152,6 +155,13 @@ export function PlannerHome() {
             addRecipe(searchTarget.dayIndex, searchTarget.mealType, recipeId);
             setSearchTarget(null);
           }}
+        />
+      )}
+
+      {viewRecipeId && (
+        <RecipeDetailModal
+          recipeId={viewRecipeId}
+          onClose={() => setViewRecipeId(null)}
         />
       )}
 

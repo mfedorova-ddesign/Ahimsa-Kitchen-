@@ -13,6 +13,7 @@ interface Props {
   onAdd: (mealType: MealType) => void;
   onRemove: (mealType: MealType, dishId: string) => void;
   onCopyDish: (mealType: MealType, dishId: string) => void;
+  onViewRecipe: (recipeId: string) => void;
   onDrop: (payload: DragPayload, toMeal: MealType) => void;
   onCopyDay: () => void;
 }
@@ -23,6 +24,7 @@ export function DayPlannerRow({
   onAdd,
   onRemove,
   onCopyDish,
+  onViewRecipe,
   onDrop,
   onCopyDay,
 }: Props) {
@@ -48,6 +50,7 @@ export function DayPlannerRow({
             onAdd={() => onAdd(mealType)}
             onRemove={(dishId) => onRemove(mealType, dishId)}
             onCopy={(dishId) => onCopyDish(mealType, dishId)}
+            onViewRecipe={onViewRecipe}
             onDrop={(payload) => onDrop(payload, mealType)}
           />
         ))}

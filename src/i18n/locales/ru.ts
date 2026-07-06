@@ -173,6 +173,13 @@ export const ru: Translations = {
     suggestTitle: 'Подобрать меню',
     suggestDesc: 'Автозаполнение планировщика случайным сбалансированным меню. Потом можно редактировать, удалять и добавлять блюда.',
     suggestGenerate: 'Заполнить план',
+    viewRecipe: 'Смотреть рецепт',
+    close: 'Закрыть',
+    nutrientsTitle: 'Нутриенты на порцию',
+    instructionsTitle: 'Приготовление',
+    prepTimeUnit: 'мин',
+    servingsUnit: 'порций',
+    tipTitle: 'Совет',
     regions: {
       european: 'Европейская',
       asian: 'Азиатская',

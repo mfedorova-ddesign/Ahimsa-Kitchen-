@@ -13,7 +13,7 @@ import {
   setPeriod,
 } from '../utils/plannerOps';
 
-const PLANNER_KEY = 'ahimsa-kitchen-planner-v2';
+const PLANNER_KEY = 'ahimsa-kitchen-planner-v6';
 
 function loadPlanner(): PlannerState {
   try {

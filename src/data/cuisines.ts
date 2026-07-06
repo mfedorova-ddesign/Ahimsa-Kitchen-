@@ -7,19 +7,17 @@ export const ADDED_SUGAR_PRODUCTS = new Set([
 ]);
 
 export const cuisineRegions: Record<CuisineRegion, string[]> = {
-  european: ['scandinavian', 'mediterranean', 'italian', 'greek'],
+  european: ['scandinavian', 'mediterranean', 'italian', 'greek', 'european', 'turkish'],
   asian: ['japanese', 'korean', 'chinese', 'thai', 'indian'],
   americas: ['mexican', 'american', 'brazilian', 'caribbean'],
   african: ['ethiopian', 'moroccan', 'west-african'],
-  'middle-eastern': ['levantine', 'moroccan'],
+  'middle-eastern': ['levantine', 'moroccan', 'turkish'],
   fusion: ['fusion'],
 };
 
 export const allCuisines = [
-  'scandinavian', 'mediterranean', 'caribbean', 'japanese', 'levantine',
-  'mexican', 'indian', 'american', 'thai', 'ethiopian', 'korean',
-  'moroccan', 'greek', 'chinese', 'italian', 'brazilian', 'fusion',
-  'west-african',
+  'indian', 'levantine', 'thai', 'italian', 'japanese', 'korean', 'mediterranean', 'greek',
+  'scandinavian', 'american', 'mexican', 'turkish', 'european', 'moroccan', 'fusion',
 ] as const;
 
 export function cuisineInRegion(cuisine: string, region: CuisineRegion): boolean {

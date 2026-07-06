@@ -12,6 +12,7 @@ interface Props {
   onAdd: () => void;
   onRemove: (dishId: string) => void;
   onCopy: (dishId: string) => void;
+  onViewRecipe: (recipeId: string) => void;
   onDrop: (payload: DragPayload) => void;
 }
 
@@ -22,6 +23,7 @@ export function MealSlotColumn({
   onAdd,
   onRemove,
   onCopy,
+  onViewRecipe,
   onDrop,
 }: Props) {
   const { t, mealLabel } = useI18n();
@@ -81,6 +83,7 @@ export function MealSlotColumn({
             mealType={mealType}
             onRemove={() => onRemove(dish.id)}
             onCopy={() => onCopy(dish.id)}
+            onView={() => onViewRecipe(dish.recipeId)}
             onDragStart={() => {}}
           />
         ))}
