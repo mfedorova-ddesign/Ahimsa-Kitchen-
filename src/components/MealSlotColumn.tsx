@@ -1,9 +1,8 @@
 import { useState, type DragEvent } from 'react';
 import type { DragPayload, MealType, PlannedDish } from '../types';
 import { useI18n } from '../i18n';
-import { getRecipeNutrients } from '../utils/recipeNutrients';
 import { DishCard } from './DishCard';
-import { NutrientSummary } from './NutrientSummary';
+import { IconAdd, IconBreakfast, IconDinner, IconLunch, IconSnack } from './Icons';
 
 interface Props {
   dayIndex: number;
@@ -15,6 +14,13 @@ interface Props {
   onViewRecipe: (recipeId: string) => void;
   onDrop: (payload: DragPayload) => void;
 }
+
+const MEAL_ICONS = {
+  breakfast: IconBreakfast,
+  lunch: IconLunch,
+  dinner: IconDinner,
+  snack: IconSnack,
+} as const;
 
 export function MealSlotColumn({
   dayIndex,
@@ -28,23 +34,7 @@ export function MealSlotColumn({
 }: Props) {
   const { t, mealLabel } = useI18n();
   const [dragOver, setDragOver] = useState(false);
-
-  const slotNutrients = dishes.reduce(
-    (acc, d) => {
-      const n = getRecipeNutrients(d.recipeId);
-      return {
-        kcal: acc.kcal + n.kcal,
-        proteinG: acc.proteinG + n.proteinG,
-        fatG: acc.fatG + n.fatG,
-        carbsG: acc.carbsG + n.carbsG,
-        fiberG: acc.fiberG + n.fiberG,
-        ironMg: acc.ironMg + n.ironMg,
-        iodineMcg: acc.iodineMcg + n.iodineMcg,
-        d3Mcg: acc.d3Mcg + n.d3Mcg,
-      };
-    },
-    { kcal: 0, proteinG: 0, fatG: 0, carbsG: 0, fiberG: 0, ironMg: 0, iodineMcg: 0, d3Mcg: 0 },
-  );
+  const MealIcon = MEAL_ICONS[mealType];
 
   function handleDragOver(e: DragEvent) {
     e.preventDefault();
@@ -62,39 +52,48 @@ export function MealSlotColumn({
 
   return (
     <div
-      className={`meal-slot ${dragOver ? 'drag-over' : ''}`}
+      className={`meal-slot meal-slot--${mealType} ${dragOver ? 'drag-over' : ''}`}
       onDragOver={handleDragOver}
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
     >
+      <div className="meal-slot-glow" aria-hidden />
       <div className="meal-slot-header">
-        <h4>{mealLabel(mealType)}</h4>
+        <div className="meal-slot-label">
+          <span className={`meal-slot-icon meal-slot-icon--${mealType}`}>
+            <MealIcon size={18} />
+          </span>
+          <h4>{mealLabel(mealType)}</h4>
+        </div>
         <button type="button" className="btn-add" onClick={onAdd}>
-          {t.planner.addDish}
+          <IconAdd size={14} />
+          <span>{t.planner.addDish}</span>
         </button>
       </div>
 
       <div className="meal-slot-dishes">
-        {dishes.map((dish) => (
-          <DishCard
-            key={dish.id}
-            dish={dish}
-            dayIndex={dayIndex}
-            mealType={mealType}
-            onRemove={() => onRemove(dish.id)}
-            onCopy={() => onCopy(dish.id)}
-            onView={() => onViewRecipe(dish.recipeId)}
-            onDragStart={() => {}}
-          />
-        ))}
+        {dishes.length === 0 ? (
+          <p className="meal-slot-empty">
+            {t.planner.emptySlot}{' · '}
+            <button type="button" className="meal-slot-empty-link" onClick={onAdd}>
+              {t.planner.addRecipeLink}
+            </button>
+          </p>
+        ) : (
+          dishes.map((dish) => (
+            <DishCard
+              key={dish.id}
+              dish={dish}
+              dayIndex={dayIndex}
+              mealType={mealType}
+              onRemove={() => onRemove(dish.id)}
+              onCopy={() => onCopy(dish.id)}
+              onView={() => onViewRecipe(dish.recipeId)}
+              onDragStart={() => {}}
+            />
+          ))
+        )}
       </div>
-
-      {dishes.length > 0 && (
-        <div className="meal-slot-total">
-          <span className="slot-total-label">{t.planner.slotTotal}</span>
-          <NutrientSummary nutrients={slotNutrients} compact />
-        </div>
-      )}
     </div>
   );
 }

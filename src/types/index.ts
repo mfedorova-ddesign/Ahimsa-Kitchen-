@@ -153,3 +153,16 @@ export interface MealPlan {
 export interface AppSettings {
   period: PlanPeriod;
 }
+
+export type Gender = 'female' | 'male';
+
+export type ActivityLevel = 'minimal' | 'moderate' | 'athlete';
+
+export interface NutrientProfile {
+  weightKg: number;
+  heightCm: number;
+  gender: Gender;
+  activity: ActivityLevel;
+}
+
+export type NutrientTargets = Nutrients;

@@ -1,6 +1,11 @@
 import type { Locale } from './types';
 import { vegRecipeTexts } from './vegRecipesContent';
 import { vegRecipesEnUk } from './vegRecipesEnUk';
+import { snackRecipeTexts } from './snackRecipesContent';
+import { snackRecipesEnUk } from './snackRecipesEnUk';
+
+const allRecipeTexts = { ...vegRecipeTexts, ...snackRecipeTexts };
+const allRecipesEnUk = { ...vegRecipesEnUk, ...snackRecipesEnUk };
 
 export interface RecipeText {
   name: string;
@@ -30,11 +35,11 @@ export const cuisineTexts: Record<string, LocaleMap<string>> = {
 };
 
 export function getRecipeText(recipeId: string, locale: Locale): RecipeText {
-  const base = vegRecipeTexts[recipeId]?.[locale];
+  const base = allRecipeTexts[recipeId]?.[locale];
   if (!base) {
     return { name: recipeId, description: '', ingredientLines: [], steps: [] };
   }
-  const translated = locale !== 'ru' ? vegRecipesEnUk[recipeId]?.[locale] : undefined;
+  const translated = locale !== 'ru' ? allRecipesEnUk[recipeId]?.[locale] : undefined;
   if (!translated) return base;
   return {
     ...base,

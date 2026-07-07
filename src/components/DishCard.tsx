@@ -2,6 +2,7 @@ import type { DragPayload, MealType, PlannedDish } from '../types';
 import { useI18n } from '../i18n';
 import { getRecipeNutrients } from '../utils/recipeNutrients';
 import { NutrientSummary } from './NutrientSummary';
+import { IconClose, IconCopy, IconDrag, IconInfo } from './Icons';
 
 interface Props {
   dish: PlannedDish;
@@ -34,16 +35,23 @@ export function DishCard({ dish, dayIndex, mealType, onRemove, onCopy, onView, o
       }}
     >
       <div className="dish-card-header">
+        <span className="dish-card-drag" aria-hidden><IconDrag /></span>
         <button type="button" className="dish-card-title-btn" onClick={onView}>
           {recipeName(dish.recipeId)}
         </button>
         <div className="dish-card-actions">
-          <button type="button" className="btn-icon" onClick={onView} title={t.planner.viewRecipe}>ⓘ</button>
-          <button type="button" className="btn-icon" onClick={onCopy} title={t.planner.copyDish}>⧉</button>
-          <button type="button" className="btn-icon" onClick={onRemove} title={t.planner.removeDish}>×</button>
+          <button type="button" className="btn-icon" onClick={onView} title={t.planner.viewRecipe}>
+            <IconInfo />
+          </button>
+          <button type="button" className="btn-icon" onClick={onCopy} title={t.planner.copyDish}>
+            <IconCopy />
+          </button>
+          <button type="button" className="btn-icon btn-icon--danger" onClick={onRemove} title={t.planner.removeDish}>
+            <IconClose />
+          </button>
         </div>
       </div>
-      <NutrientSummary nutrients={nutrients} compact />
+      <NutrientSummary nutrients={nutrients} inline />
     </div>
   );
 }

@@ -116,9 +116,8 @@ export function RecipeDetailModal({ recipeId, onClose, onAdd }: Props) {
             </p>
           )}
 
-          <section className="recipe-detail-section">
-            <h3>{t.planner.nutrientsTitle}</h3>
-            <NutrientSummary nutrients={nutrients} />
+          <section className="recipe-detail-section recipe-detail-nutrients">
+            <NutrientSummary nutrients={nutrients} panel title={t.planner.nutrientsTitle} />
           </section>
         </div>
 

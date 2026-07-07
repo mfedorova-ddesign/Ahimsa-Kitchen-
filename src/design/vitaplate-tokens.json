@@ -1,0 +1,207 @@
+{
+  "color": {
+    "background": {
+      "value": "#0b1a0f",
+      "type": "color",
+      "description": "Page canvas"
+    },
+    "foreground": {
+      "value": "#d8eed9",
+      "type": "color",
+      "description": "Primary text"
+    },
+    "card": {
+      "value": "#121f16",
+      "type": "color",
+      "description": "Elevated surfaces"
+    },
+    "cardForeground": {
+      "value": "#d8eed9",
+      "type": "color",
+      "description": "Text on cards"
+    },
+    "border": {
+      "value": "rgba(111,207,138,0.10)",
+      "type": "color",
+      "description": "Hairline rules"
+    },
+    "primary": {
+      "value": "#6fcf8a",
+      "type": "color",
+      "description": "CTAs, active states"
+    },
+    "primaryForeground": {
+      "value": "#0b1a0f",
+      "type": "color",
+      "description": "Text on primary"
+    },
+    "secondary": {
+      "value": "#1a2e1e",
+      "type": "color",
+      "description": "Subtle surfaces, toggles"
+    },
+    "secondaryForeground": {
+      "value": "#a3c9a8",
+      "type": "color",
+      "description": "Text on secondary"
+    },
+    "muted": {
+      "value": "#162219",
+      "type": "color",
+      "description": "De-emphasised fills"
+    },
+    "mutedForeground": {
+      "value": "#6b9470",
+      "type": "color",
+      "description": "Captions, labels"
+    },
+    "ring": {
+      "value": "rgba(111,207,138,0.40)",
+      "type": "color",
+      "description": "Focus rings"
+    },
+    "destructive": {
+      "value": "#e05252",
+      "type": "color",
+      "description": "Delete, error states"
+    },
+    "accent": {
+      "value": "#f2c94c",
+      "type": "color",
+      "description": "Calories & amber highlights"
+    }
+  },
+  "meal": {
+    "breakfast": {
+      "value": "#f2c94c",
+      "type": "color"
+    },
+    "breakfastWash": {
+      "value": "rgba(242,201,76,0.12)",
+      "type": "color"
+    },
+    "lunch": {
+      "value": "#6fcf8a",
+      "type": "color"
+    },
+    "lunchWash": {
+      "value": "rgba(111,207,138,0.12)",
+      "type": "color"
+    },
+    "dinner": {
+      "value": "#74b9ff",
+      "type": "color"
+    },
+    "dinnerWash": {
+      "value": "rgba(116,185,255,0.12)",
+      "type": "color"
+    },
+    "snacks": {
+      "value": "#fd79a8",
+      "type": "color"
+    },
+    "snacksWash": {
+      "value": "rgba(253,121,168,0.12)",
+      "type": "color"
+    }
+  },
+  "nutrient": {
+    "protein": {
+      "value": "#6fcf8a",
+      "type": "color"
+    },
+    "carbs": {
+      "value": "#74b9ff",
+      "type": "color"
+    },
+    "fats": {
+      "value": "#fdcb6e",
+      "type": "color"
+    },
+    "fibre": {
+      "value": "#a29bfe",
+      "type": "color"
+    },
+    "sugars": {
+      "value": "#fd79a8",
+      "type": "color"
+    },
+    "iron": {
+      "value": "#e17055",
+      "type": "color"
+    },
+    "vitaminC": {
+      "value": "#00cec9",
+      "type": "color"
+    },
+    "calcium": {
+      "value": "#a8d8ea",
+      "type": "color"
+    }
+  },
+  "font": {
+    "display": {
+      "value": "Fraunces",
+      "type": "fontFamilies",
+      "description": "Headings — organic serif"
+    },
+    "body": {
+      "value": "DM Sans",
+      "type": "fontFamilies",
+      "description": "Body, labels, captions"
+    }
+  },
+  "fontWeight": {
+    "light": { "value": "300", "type": "fontWeights" },
+    "regular": { "value": "400", "type": "fontWeights" },
+    "medium": { "value": "500", "type": "fontWeights" },
+    "semibold": { "value": "600", "type": "fontWeights" }
+  },
+  "fontSize": {
+    "micro": { "value": "11", "type": "fontSizes" },
+    "caption": { "value": "12", "type": "fontSizes" },
+    "body": { "value": "16", "type": "fontSizes" },
+    "heading2": { "value": "18", "type": "fontSizes" },
+    "heading1": { "value": "28", "type": "fontSizes" },
+    "display": { "value": "40", "type": "fontSizes" },
+    "hero": { "value": "56", "type": "fontSizes" }
+  },
+  "lineHeight": {
+    "tight": { "value": "110%", "type": "lineHeights" },
+    "snug": { "value": "120%", "type": "lineHeights" },
+    "normal": { "value": "150%", "type": "lineHeights" },
+    "relaxed": { "value": "160%", "type": "lineHeights" }
+  },
+  "spacing": {
+    "1": { "value": "4", "type": "spacing" },
+    "2": { "value": "8", "type": "spacing" },
+    "3": { "value": "12", "type": "spacing" },
+    "4": { "value": "16", "type": "spacing" },
+    "5": { "value": "20", "type": "spacing" },
+    "6": { "value": "24", "type": "spacing" },
+    "8": { "value": "32", "type": "spacing" },
+    "10": { "value": "40", "type": "spacing" },
+    "12": { "value": "48", "type": "spacing" },
+    "16": { "value": "64", "type": "spacing" }
+  },
+  "borderRadius": {
+    "sm": { "value": "6", "type": "borderRadius" },
+    "md": { "value": "10", "type": "borderRadius" },
+    "lg": { "value": "14", "type": "borderRadius", "description": "Default" },
+    "xl": { "value": "18", "type": "borderRadius" },
+    "2xl": { "value": "20", "type": "borderRadius", "description": "Cards, panels" },
+    "full": { "value": "9999", "type": "borderRadius", "description": "Pills, tags" }
+  },
+  "boxShadow": {
+    "raised": {
+      "value": "0 2px 8px rgba(0,0,0,0.35)",
+      "type": "boxShadow",
+      "description": "Cards"
+    },
+    "overlay": {
+      "value": "0 8px 32px rgba(0,0,0,0.60)",
+      "type": "boxShadow",
+      "description": "Modals"
+    }
+  }
+}

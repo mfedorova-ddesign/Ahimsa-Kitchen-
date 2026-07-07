@@ -33,32 +33,33 @@ export function DayPlannerRow({
 
   return (
     <section className="day-planner-row">
-      <div className="day-planner-header">
-        {showDayLabel && <h2 className="day-planner-title">{dayLabel(day.dayIndex)}</h2>}
-        <button type="button" className="btn-text" onClick={onCopyDay}>
-          {t.planner.copyDay}
-        </button>
-      </div>
+      {showDayLabel && (
+        <div className="day-planner-header">
+          <h2 className="day-planner-title day-planner-title--serif">{dayLabel(day.dayIndex)}</h2>
+          <button type="button" className="btn-text" onClick={onCopyDay}>
+            {t.planner.copyDay}
+          </button>
+        </div>
+      )}
 
-      <div className="meal-slots-grid">
-        {MEAL_TYPES.map((mealType) => (
-          <MealSlotColumn
-            key={mealType}
-            dayIndex={day.dayIndex}
-            mealType={mealType}
-            dishes={day.slots[mealType]}
-            onAdd={() => onAdd(mealType)}
-            onRemove={(dishId) => onRemove(mealType, dishId)}
-            onCopy={(dishId) => onCopyDish(mealType, dishId)}
-            onViewRecipe={onViewRecipe}
-            onDrop={(payload) => onDrop(payload, mealType)}
-          />
-        ))}
-      </div>
+      <div className="day-planner-layout">
+        <div className="day-planner-meals">
+          {MEAL_TYPES.map((mealType) => (
+            <MealSlotColumn
+              key={mealType}
+              dayIndex={day.dayIndex}
+              mealType={mealType}
+              dishes={day.slots[mealType]}
+              onAdd={() => onAdd(mealType)}
+              onRemove={(dishId) => onRemove(mealType, dishId)}
+              onCopy={(dishId) => onCopyDish(mealType, dishId)}
+              onViewRecipe={onViewRecipe}
+              onDrop={(payload) => onDrop(payload, mealType)}
+            />
+          ))}
+        </div>
 
-      <div className="day-planner-total">
-        <h3>{t.common.dayTotal}</h3>
-        <NutrientSummary nutrients={dayNutrients} />
+        <NutrientSummary nutrients={dayNutrients} panel />
       </div>
     </section>
   );
