@@ -16,8 +16,6 @@ export function defaultFilters(): RecipeSearchFilters {
 }
 
 export function searchRecipes(filters: RecipeSearchFilters): Recipe[] {
-  const q = filters.query.trim().toLowerCase();
-
   return recipes.filter((recipe) => {
     if (filters.mealType !== 'all' && recipe.mealType !== filters.mealType) return false;
 
@@ -36,11 +34,48 @@ export function searchRecipes(filters: RecipeSearchFilters): Recipe[] {
       if (!filters.tags.every((t) => computed.includes(t))) return false;
     }
 
-    if (q) {
-      const haystack = `${recipe.id} ${recipe.cuisine} ${recipe.mealType} ${recipe.tags.join(' ')}`.toLowerCase();
-      if (!haystack.includes(q)) return false;
-    }
-
     return true;
   });
+}
+
+export interface RecipeTextSearch {
+  name: (id: string) => string;
+  description: (id: string) => string;
+  ingredientLines: (id: string) => string[];
+  tip: (id: string) => string | undefined;
+  cuisineName: (cuisineId: string) => string;
+}
+
+export function recipeMatchesQuery(
+  recipe: Recipe,
+  query: string,
+  text: RecipeTextSearch,
+): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+
+  const haystack = [
+    recipe.id,
+    recipe.id.replace(/-/g, ' '),
+    recipe.cuisine,
+    recipe.mealType,
+    ...recipe.tags,
+    text.name(recipe.id),
+    text.description(recipe.id),
+    text.cuisineName(recipe.cuisine),
+    ...(text.ingredientLines(recipe.id) ?? []),
+    text.tip(recipe.id) ?? '',
+  ]
+    .join(' ')
+    .toLowerCase();
+
+  return haystack.includes(q);
+}
+
+export function searchRecipesWithText(
+  filters: RecipeSearchFilters,
+  text: RecipeTextSearch,
+): Recipe[] {
+  const q = filters.query.trim();
+  return searchRecipes(filters).filter((recipe) => recipeMatchesQuery(recipe, q, text));
 }

@@ -5,7 +5,7 @@ import { useI18n } from '../i18n';
 import type { CuisineRegion, MealType, RecipeFilterTag, RecipeSearchFilters } from '../types';
 import { getRecipeNutrients } from '../utils/recipeNutrients';
 import { recipeEmoji } from '../utils/recipeEmoji';
-import { defaultFilters, searchRecipes } from '../utils/recipeSearch';
+import { defaultFilters, searchRecipesWithText } from '../utils/recipeSearch';
 import { NutrientSummary } from './NutrientSummary';
 import { RecipeDetailModal } from './RecipeDetailModal';
 import { PortionStepper } from './PortionStepper';
@@ -31,25 +31,23 @@ interface Props {
 }
 
 export function RecipeSearchModal({ initialMealType, onClose, onSelect, embedded = false }: Props) {
-  const { t, recipeName, recipeDescription, cuisineName, mealLabel } = useI18n();
+  const { t, recipeName, recipeDescription, recipeIngredientLines, recipeTip, cuisineName, mealLabel } = useI18n();
   const [filters, setFilters] = useState<RecipeSearchFilters>({
     ...defaultFilters(),
-    mealType: initialMealType,
+    mealType: 'all',
   });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [portions, setPortions] = useState(1);
   const [viewRecipeId, setViewRecipeId] = useState<string | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
-  const results = useMemo(() => {
-    const base = searchRecipes(filters);
-    const q = filters.query.trim().toLowerCase();
-    if (!q) return base;
-    return base.filter((r) =>
-      recipeName(r.id).toLowerCase().includes(q) ||
-      recipeDescription(r.id).toLowerCase().includes(q),
-    );
-  }, [filters, recipeName, recipeDescription]);
+  const results = useMemo(() => searchRecipesWithText(filters, {
+    name: recipeName,
+    description: recipeDescription,
+    ingredientLines: recipeIngredientLines,
+    tip: recipeTip,
+    cuisineName,
+  }), [filters, recipeName, recipeDescription, recipeIngredientLines, recipeTip, cuisineName]);
 
   const mealTitle = `${mealLabel(initialMealType)} ${MEAL_EMOJI[initialMealType]}`;
   const modalTitle = t.planner.addToMeal.replace('{meal}', mealTitle);
