@@ -1,6 +1,5 @@
 import type { DragPayload, MealType, PlannerDay } from '../types';
 import { useI18n } from '../i18n';
-import { getRecipeNutrients } from '../utils/recipeNutrients';
 import { slotsNutrients } from '../utils/plannerOps';
 import { MealSlotColumn } from './MealSlotColumn';
 import { NutrientSummary } from './NutrientSummary';
@@ -10,10 +9,11 @@ const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
 interface Props {
   day: PlannerDay;
   showDayLabel: boolean;
-  onAdd: (mealType: MealType) => void;
+  onAdd: (mealType: MealType, tab?: 'recipe' | 'product') => void;
   onRemove: (mealType: MealType, dishId: string) => void;
   onCopyDish: (mealType: MealType, dishId: string) => void;
   onViewRecipe: (recipeId: string) => void;
+  onPortionsChange: (mealType: MealType, dishId: string, portions: number) => void;
   onDrop: (payload: DragPayload, toMeal: MealType) => void;
   onCopyDay: () => void;
 }
@@ -25,11 +25,12 @@ export function DayPlannerRow({
   onRemove,
   onCopyDish,
   onViewRecipe,
+  onPortionsChange,
   onDrop,
   onCopyDay,
 }: Props) {
   const { t, dayLabel } = useI18n();
-  const dayNutrients = slotsNutrients(day.slots, getRecipeNutrients);
+  const dayNutrients = slotsNutrients(day.slots);
 
   return (
     <section className="day-planner-row">
@@ -50,10 +51,11 @@ export function DayPlannerRow({
               dayIndex={day.dayIndex}
               mealType={mealType}
               dishes={day.slots[mealType]}
-              onAdd={() => onAdd(mealType)}
+              onAdd={(tab) => onAdd(mealType, tab)}
               onRemove={(dishId) => onRemove(mealType, dishId)}
               onCopy={(dishId) => onCopyDish(mealType, dishId)}
               onViewRecipe={onViewRecipe}
+              onPortionsChange={(dishId, portions) => onPortionsChange(mealType, dishId, portions)}
               onDrop={(payload) => onDrop(payload, mealType)}
             />
           ))}

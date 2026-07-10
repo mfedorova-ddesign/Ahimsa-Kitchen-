@@ -3,7 +3,7 @@ import { AppLogo } from './AppLogo';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { GeneralDisclaimer } from './GeneralDisclaimer';
 import { DayPlannerRow } from './DayPlannerRow';
-import { RecipeSearchModal } from './RecipeSearchModal';
+import { AddToMealModal } from './AddToMealModal';
 import { SuggestMenuModal } from './SuggestMenuModal';
 import { RecipeDetailModal } from './RecipeDetailModal';
 import { useI18n } from '../i18n';
@@ -16,11 +16,12 @@ import {
   printPlan,
 } from '../utils/exportPlan';
 import { formatNutrients } from '../utils/nutrients';
-import { getRecipeNutrients } from '../utils/recipeNutrients';
+import { getPlannedItemNutrients } from '../utils/plannedNutrients';
 
 interface SearchTarget {
   dayIndex: number;
   mealType: MealType;
+  initialTab: 'recipe' | 'product';
 }
 
 const DATE_LOCALE: Record<string, string> = {
@@ -30,11 +31,13 @@ const DATE_LOCALE: Record<string, string> = {
 };
 
 export function PlannerHome() {
-  const { t, locale, dayLabel, mealLabel, recipeName } = useI18n();
+  const { t, locale, dayLabel, mealLabel, recipeName, productName, productPortion } = useI18n();
   const {
     planner,
     setPlannerPeriod,
     addRecipe,
+    addProductToMeal,
+    setDishPortions,
     deleteDish,
     copyDish,
     dragDish,
@@ -55,14 +58,23 @@ export function PlannerHome() {
     day: 'numeric',
   });
 
-  function nutrientsLine(n: ReturnType<typeof getRecipeNutrients>) {
+  function nutrientsLine(n: ReturnType<typeof getPlannedItemNutrients>) {
     const f = formatNutrients(n);
     return `${f.kcal} kcal, P ${f.proteinG}g, F ${f.fatG}g, C ${f.carbsG}g, Fi ${f.fiberG}g, Fe ${f.ironMg}mg`;
   }
 
   function handleExportText() {
     downloadTextFile(
-      exportPlanAsText(planner, { dayLabel, mealLabel, recipeName, nutrientsLine }),
+      exportPlanAsText(planner, {
+        dayLabel,
+        mealLabel,
+        recipeName,
+        productName,
+        productPortion,
+        nutrientsLine,
+        halfPortion: t.planner.halfPortion,
+        weightGrams: (n) => t.planner.weightGrams.replace('{n}', String(n)),
+      }),
       'ahimsa-kitchen-plan.txt',
     );
   }
@@ -73,7 +85,11 @@ export function PlannerHome() {
       dayLabel,
       mealLabel,
       recipeName,
+      productName,
+      productPortion,
       nutrientsLine,
+      halfPortion: t.planner.halfPortion,
+      weightGrams: (n) => t.planner.weightGrams.replace('{n}', String(n)),
     }));
   }
 
@@ -151,10 +167,13 @@ export function PlannerHome() {
             key={day.dayIndex}
             day={day}
             showDayLabel={planner.period === 'week'}
-            onAdd={(mealType) => setSearchTarget({ dayIndex: day.dayIndex, mealType })}
+            onAdd={(mealType, tab = 'recipe') => setSearchTarget({ dayIndex: day.dayIndex, mealType, initialTab: tab })}
             onRemove={(mealType, dishId) => deleteDish(day.dayIndex, mealType, dishId)}
             onCopyDish={(mealType, dishId) => copyDish(day.dayIndex, mealType, dishId)}
             onViewRecipe={setViewRecipeId}
+            onPortionsChange={(mealType, dishId, portions) =>
+              setDishPortions(day.dayIndex, mealType, dishId, portions)
+            }
             onDrop={(payload, toMeal) => dragDish(payload, day.dayIndex, toMeal)}
             onCopyDay={() => handleCopyDay(day.dayIndex)}
           />
@@ -162,11 +181,16 @@ export function PlannerHome() {
       </div>
 
       {searchTarget && (
-        <RecipeSearchModal
+        <AddToMealModal
           initialMealType={searchTarget.mealType}
+          initialTab={searchTarget.initialTab}
           onClose={() => setSearchTarget(null)}
-          onSelect={(recipeId) => {
-            addRecipe(searchTarget.dayIndex, searchTarget.mealType, recipeId);
+          onSelectRecipe={(recipeId, portions) => {
+            addRecipe(searchTarget.dayIndex, searchTarget.mealType, recipeId, portions);
+            setSearchTarget(null);
+          }}
+          onSelectProduct={(productId, portions) => {
+            addProductToMeal(searchTarget.dayIndex, searchTarget.mealType, productId, portions);
             setSearchTarget(null);
           }}
         />

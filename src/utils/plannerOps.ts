@@ -8,6 +8,8 @@ import type {
   PlannerState,
   PlanPeriod,
 } from '../types';
+import { clampPortions } from './portionUtils';
+import { getPlannedItemNutrients } from './plannedNutrients';
 
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
 
@@ -39,8 +41,14 @@ export function addDish(
   dayIndex: number,
   mealType: MealType,
   recipeId: string,
+  portions = 1,
 ): PlannerState {
-  const dish: PlannedDish = { id: newDishId(), recipeId };
+  const dish: PlannedDish = {
+    id: newDishId(),
+    kind: 'recipe',
+    recipeId,
+    portions: clampPortions(portions),
+  };
   return updateDay(planner, dayIndex, (day) => ({
     ...day,
     slots: {
@@ -48,6 +56,62 @@ export function addDish(
       [mealType]: [...day.slots[mealType], dish],
     },
   }));
+}
+
+export function addProduct(
+  planner: PlannerState,
+  dayIndex: number,
+  mealType: MealType,
+  productId: string,
+  portions = 1,
+): PlannerState {
+  const dish: PlannedDish = {
+    id: newDishId(),
+    kind: 'product',
+    productId,
+    portions: clampPortions(portions),
+  };
+  return updateDay(planner, dayIndex, (day) => ({
+    ...day,
+    slots: {
+      ...day.slots,
+      [mealType]: [...day.slots[mealType], dish],
+    },
+  }));
+}
+
+export function updateDishPortions(
+  planner: PlannerState,
+  dayIndex: number,
+  mealType: MealType,
+  dishId: string,
+  portions: number,
+): PlannerState {
+  if (portions <= 0) {
+    return removeDish(planner, dayIndex, mealType, dishId);
+  }
+
+  const nextPortions = clampPortions(portions);
+  return updateDay(planner, dayIndex, (day) => ({
+    ...day,
+    slots: {
+      ...day.slots,
+      [mealType]: day.slots[mealType].map((d) =>
+        d.id === dishId ? { ...d, portions: nextPortions } : d,
+      ),
+    },
+  }));
+}
+
+/** @deprecated use updateDishPortions */
+export function updateProductPortions(
+  planner: PlannerState,
+  dayIndex: number,
+  mealType: MealType,
+  dishId: string,
+  portions: number,
+): PlannerState {
+  return updateDishPortions(planner, dayIndex, mealType, dishId, portions);
 }
 
 export function removeDish(
@@ -75,7 +139,10 @@ export function duplicateDish(
   const dish = day?.slots[mealType].find((d) => d.id === dishId);
   if (!dish) return planner;
 
-  const copy: PlannedDish = { id: newDishId(), recipeId: dish.recipeId };
+  const copy: PlannedDish =
+    dish.kind === 'recipe'
+      ? { id: newDishId(), kind: 'recipe', recipeId: dish.recipeId, portions: dish.portions }
+      : { id: newDishId(), kind: 'product', productId: dish.productId, portions: dish.portions };
   return updateDay(planner, dayIndex, (d) => ({
     ...d,
     slots: {
@@ -123,10 +190,11 @@ export function copyDay(
 
   const cloned: MealSlots = { breakfast: [], lunch: [], dinner: [], snack: [] };
   for (const mt of MEAL_TYPES) {
-    cloned[mt] = source.slots[mt].map((d) => ({
-      id: newDishId(),
-      recipeId: d.recipeId,
-    }));
+    cloned[mt] = source.slots[mt].map((d) =>
+      d.kind === 'recipe'
+        ? { id: newDishId(), kind: 'recipe' as const, recipeId: d.recipeId, portions: d.portions }
+        : { id: newDishId(), kind: 'product' as const, productId: d.productId, portions: d.portions },
+    );
   }
 
   return updateDay(planner, toDayIndex, () => ({
@@ -165,7 +233,7 @@ export function mealPlanToPlanner(plan: MealPlan): PlannerState {
   const days: PlannerDay[] = plan.days.map((dayPlan) => {
     const slots = emptySlots();
     for (const meal of dayPlan.meals) {
-      slots[meal.type].push({ id: newDishId(), recipeId: meal.recipeId });
+      slots[meal.type].push({ id: newDishId(), kind: 'recipe', recipeId: meal.recipeId, portions: 1 });
     }
     return { dayIndex: dayPlan.dayIndex, slots };
   });
@@ -189,14 +257,11 @@ function updateDay(
   };
 }
 
-export function slotsNutrients(
-  slots: MealSlots,
-  getNutrients: (recipeId: string) => import('../types').Nutrients,
-): import('../types').Nutrients {
+export function slotsNutrients(slots: MealSlots): import('../types').Nutrients {
   const allDishes = MEAL_TYPES.flatMap((mt) => slots[mt]);
   return allDishes.reduce(
     (acc, dish) => {
-      const n = getNutrients(dish.recipeId);
+      const n = getPlannedItemNutrients(dish);
       return {
         kcal: acc.kcal + n.kcal,
         proteinG: acc.proteinG + n.proteinG,
@@ -210,4 +275,35 @@ export function slotsNutrients(
     },
     { kcal: 0, proteinG: 0, fatG: 0, carbsG: 0, fiberG: 0, ironMg: 0, iodineMcg: 0, d3Mcg: 0 },
   );
+}
+
+export function migratePlannedDish(raw: unknown): PlannedDish | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const d = raw as Record<string, unknown>;
+  if (typeof d.id !== 'string') return null;
+
+  if (d.kind === 'recipe' && typeof d.recipeId === 'string') {
+    const portions = typeof d.portions === 'number' && d.portions > 0 ? d.portions : 1;
+    return { id: d.id, kind: 'recipe', recipeId: d.recipeId, portions: clampPortions(portions) };
+  }
+  if (d.kind === 'product' && typeof d.productId === 'string') {
+    const portions = typeof d.portions === 'number' && d.portions > 0 ? d.portions : 1;
+    return { id: d.id, kind: 'product', productId: d.productId, portions: clampPortions(portions) };
+  }
+  if (typeof d.recipeId === 'string') {
+    return { id: d.id, kind: 'recipe', recipeId: d.recipeId, portions: 1 };
+  }
+  return null;
+}
+
+export function migratePlannerSlots(slots: MealSlots): MealSlots {
+  const migrateList = (list: unknown[]) =>
+    list.map(migratePlannedDish).filter((d): d is PlannedDish => d !== null);
+
+  return {
+    breakfast: migrateList(slots.breakfast as unknown[]),
+    lunch: migrateList(slots.lunch as unknown[]),
+    dinner: migrateList(slots.dinner as unknown[]),
+    snack: migrateList(slots.snack as unknown[]),
+  };
 }

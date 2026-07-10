@@ -46,6 +46,19 @@ export function emptyNutrients(): Nutrients {
   };
 }
 
+export function scaleNutrients(n: Nutrients, factor: number): Nutrients {
+  return {
+    kcal: n.kcal * factor,
+    proteinG: n.proteinG * factor,
+    fatG: n.fatG * factor,
+    carbsG: n.carbsG * factor,
+    fiberG: n.fiberG * factor,
+    ironMg: n.ironMg * factor,
+    iodineMcg: n.iodineMcg * factor,
+    d3Mcg: n.d3Mcg * factor,
+  };
+}
+
 export function roundNutrient(value: number, decimals = 1): number {
   const factor = 10 ** decimals;
   return Math.round(value * factor) / factor;

@@ -1,13 +1,41 @@
 import type { PlannerState } from '../types';
-import { getRecipeNutrients } from './recipeNutrients';
+import { getPlannedItemNutrients } from './plannedNutrients';
+import { getPlannedItemWeightG } from './recipeServing';
+import { formatPortionValue } from './portionUtils';
 import { slotsNutrients } from './plannerOps';
+import type { Nutrients } from '../types';
 
 type LabelFn = {
   dayLabel: (i: number) => string;
   mealLabel: (t: string) => string;
   recipeName: (id: string) => string;
-  nutrientsLine: (n: ReturnType<typeof getRecipeNutrients>) => string;
+  productName: (id: string) => string;
+  productPortion: (id: string) => string;
+  nutrientsLine: (n: Nutrients) => string;
+  halfPortion: string;
+  weightGrams: (n: number) => string;
 };
+
+function formatPlannedItem(
+  dish: PlannerState['days'][0]['slots']['breakfast'][number],
+  labels: LabelFn,
+): string {
+  const n = getPlannedItemNutrients(dish);
+  const portionText = dish.portions === 1 ? '' : ` ×${formatPortionValue(dish.portions, labels.halfPortion)}`;
+  const weightG = getPlannedItemWeightG(
+    dish,
+    dish.kind === 'product' ? labels.productPortion(dish.productId) : undefined,
+  );
+  const weightText = weightG != null && weightG > 0
+    ? `, ${labels.weightGrams(weightG)}`
+    : '';
+
+  if (dish.kind === 'recipe') {
+    return `${labels.recipeName(dish.recipeId)}${portionText}${weightText} (${labels.nutrientsLine(n)})`;
+  }
+  const portionLabel = labels.productPortion(dish.productId);
+  return `${labels.productName(dish.productId)}${portionText} — ${portionLabel}${weightText} (${labels.nutrientsLine(n)})`;
+}
 
 export function exportPlanAsText(
   planner: PlannerState,
@@ -25,13 +53,12 @@ export function exportPlanAsText(
 
       lines.push(`### ${labels.mealLabel(mealType)}`);
       for (const dish of dishes) {
-        const n = getRecipeNutrients(dish.recipeId);
-        lines.push(`- ${labels.recipeName(dish.recipeId)} (${labels.nutrientsLine(n)})`);
+        lines.push(`- ${formatPlannedItem(dish, labels)}`);
       }
       lines.push('');
     }
 
-    const dayTotal = slotsNutrients(day.slots, getRecipeNutrients);
+    const dayTotal = slotsNutrients(day.slots);
     lines.push(`**Day total:** ${labels.nutrientsLine(dayTotal)}`);
     lines.push('');
   }
@@ -68,15 +95,14 @@ export function exportPlanAsPrintHtml(
     body += `<h2>${labels.dayLabel(day.dayIndex)}</h2><ul>`;
     for (const mealType of ['breakfast', 'lunch', 'dinner', 'snack'] as const) {
       for (const dish of day.slots[mealType]) {
-        const n = getRecipeNutrients(dish.recipeId);
-        body += `<li><strong>${labels.mealLabel(mealType)}:</strong> ${labels.recipeName(dish.recipeId)} <em>(${labels.nutrientsLine(n)})</em></li>`;
+        body += `<li><strong>${labels.mealLabel(mealType)}:</strong> ${formatPlannedItem(dish, labels)}</li>`;
       }
     }
-    const total = slotsNutrients(day.slots, getRecipeNutrients);
+    const total = slotsNutrients(day.slots);
     body += `</ul><p><strong>Day total:</strong> ${labels.nutrientsLine(total)}</p>`;
   }
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${labels.title}</title>
     <style>body{font-family:sans-serif;max-width:700px;margin:2rem auto;line-height:1.5}
-    h1{color:#2d6a4f}h2{margin-top:1.5rem;border-bottom:1px solid #ddd}</style></head><body>${body}</body></html>`;
+    h1,h2{margin-top:1.5rem}ul{padding-left:1.25rem}em{color:#555;font-size:0.9em}</style></head><body>${body}</body></html>`;
 }

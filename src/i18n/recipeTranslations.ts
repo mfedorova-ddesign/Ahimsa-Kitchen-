@@ -3,9 +3,11 @@ import { vegRecipeTexts } from './vegRecipesContent';
 import { vegRecipesEnUk } from './vegRecipesEnUk';
 import { snackRecipeTexts } from './snackRecipesContent';
 import { snackRecipesEnUk } from './snackRecipesEnUk';
+import { extraRecipeTexts } from './extraRecipesContent';
+import { extraRecipesEnUk } from './extraRecipesEnUk';
 
-const allRecipeTexts = { ...vegRecipeTexts, ...snackRecipeTexts };
-const allRecipesEnUk = { ...vegRecipesEnUk, ...snackRecipesEnUk };
+const allRecipeTexts = { ...vegRecipeTexts, ...snackRecipeTexts, ...extraRecipeTexts };
+const allRecipesEnUk = { ...vegRecipesEnUk, ...snackRecipesEnUk, ...extraRecipesEnUk };
 
 export interface RecipeText {
   name: string;

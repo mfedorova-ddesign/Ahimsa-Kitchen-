@@ -1671,6 +1671,214 @@ body {
   padding-inline: 1.25rem;
 }
 
+/* ── Add to meal / products ── */
+
+.add-to-meal-modal {
+  display: flex;
+  flex-direction: column;
+  max-height: min(90vh, 820px);
+}
+
+.add-to-meal-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.add-to-meal-tabs {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.add-to-meal-tab {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.add-to-meal-tab.active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.product-search-embedded,
+.recipe-search-embedded {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.product-category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem;
+}
+
+.product-category-tab {
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.product-category-tab.active {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.portion-stepper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+
+.portion-stepper-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.portion-stepper-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.portion-stepper-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.portion-stepper-btn--half {
+  width: auto;
+  min-width: 32px;
+  padding: 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.portion-stepper-btn--half.active {
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+.portion-stepper-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.portion-stepper-value {
+  min-width: 2.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.portion-weight-badge {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-muted);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  white-space: nowrap;
+}
+
+.portion-stepper--compact {
+  gap: 0.35rem;
+}
+
+.portion-stepper--compact .portion-stepper-btn {
+  width: 24px;
+  height: 24px;
+  font-size: 0.9rem;
+}
+
+.portion-stepper--compact .portion-stepper-btn--half {
+  width: auto;
+  min-width: 28px;
+  padding: 0 0.35rem;
+}
+
+.dish-card--product,
+.dish-card--recipe {
+  border-left: 3px solid var(--accent);
+}
+
+.dish-card-portion-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin: 0.2rem 0 0.35rem 1.75rem;
+}
+
+.dish-card-portion-label,
+.dish-card-recipe-yield {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.dish-card-recipe-yield {
+  font-style: italic;
+}
+
+.recipe-search-footer--portions {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.recipe-add-portion-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: var(--surface-elevated);
+}
+
+.recipe-serving-hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.recipe-search-footer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dish-card-title--product {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 @media (max-width: 899px) {
   .nutrient-panel {
     margin-top: 0.5rem;

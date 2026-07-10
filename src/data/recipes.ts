@@ -1,7 +1,8 @@
 import type { Recipe } from '../types';
 import { snackRecipes } from './snackRecipes';
+import { extraRecipes } from './extraRecipes';
 
-/** Vegan recipe collection (39 recipes). */
+/** Vegan recipe collection (49 recipes). */
 export const recipes: Recipe[] = [
   {
     id: 'oatmeal-almond-seeds',
@@ -234,6 +235,7 @@ export const recipes: Recipe[] = [
     perServing: { kcal: 280, proteinG: 8, fatG: 8, carbsG: 42, fiberG: 6, ironMg: 2, iodineMcg: 0, d3Mcg: 0 },
   },
   ...snackRecipes,
+  ...extraRecipes,
 ];
 
 export const recipesById = new Map(recipes.map((r) => [r.id, r]));

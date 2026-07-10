@@ -8,7 +8,11 @@ import { recipeEmoji } from '../utils/recipeEmoji';
 import { defaultFilters, searchRecipes } from '../utils/recipeSearch';
 import { NutrientSummary } from './NutrientSummary';
 import { RecipeDetailModal } from './RecipeDetailModal';
+import { PortionStepper } from './PortionStepper';
 import { IconClose, IconInfo, IconSearch, MEAL_EMOJI } from './Icons';
+import { recipesById } from '../data/recipes';
+import { getRecipeServingWeightG } from '../utils/recipeServing';
+import { scaleNutrients } from '../utils/nutrients';
 
 const FILTER_TAGS: RecipeFilterTag[] = [
   'high-protein', 'iron-rich', 'iodine-rich', 'd3-source',
@@ -22,16 +26,18 @@ const REGIONS: CuisineRegion[] = [
 interface Props {
   initialMealType: MealType;
   onClose: () => void;
-  onSelect: (recipeId: string) => void;
+  onSelect: (recipeId: string, portions: number) => void;
+  embedded?: boolean;
 }
 
-export function RecipeSearchModal({ initialMealType, onClose, onSelect }: Props) {
+export function RecipeSearchModal({ initialMealType, onClose, onSelect, embedded = false }: Props) {
   const { t, recipeName, recipeDescription, cuisineName, mealLabel } = useI18n();
   const [filters, setFilters] = useState<RecipeSearchFilters>({
     ...defaultFilters(),
     mealType: initialMealType,
   });
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [portions, setPortions] = useState(1);
   const [viewRecipeId, setViewRecipeId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -56,24 +62,32 @@ export function RecipeSearchModal({ initialMealType, onClose, onSelect }: Props)
     }));
   }
 
+  const selectedRecipe = selectedId ? recipesById.get(selectedId) : undefined;
+  const previewNutrients = selectedId
+    ? scaleNutrients(getRecipeNutrients(selectedId), portions)
+    : null;
+  const previewWeightG = selectedId
+    ? Math.round(getRecipeServingWeightG(selectedId) * portions)
+    : null;
+
   function truncate(text: string, max = 72): string {
     if (text.length <= max) return text;
     return `${text.slice(0, max).trim()}…`;
   }
 
-  return (
+  const content = (
     <>
-      <div className="modal-overlay" onClick={onClose} role="presentation">
-        <div className="modal recipe-search-modal" onClick={(e) => e.stopPropagation()} role="dialog">
-          <header className="modal-header recipe-search-header">
-            <div>
-              <h2>{modalTitle}</h2>
-              <p className="recipe-search-subtitle">{countLabel}</p>
-            </div>
-            <button type="button" className="btn-icon modal-close" onClick={onClose} aria-label={t.planner.close}>
-              <IconClose size={20} />
-            </button>
-          </header>
+      <header className="modal-header recipe-search-header">
+        <div>
+          <h2>{modalTitle}</h2>
+          <p className="recipe-search-subtitle">{countLabel}</p>
+        </div>
+        {!embedded && (
+          <button type="button" className="btn-icon modal-close" onClick={onClose} aria-label={t.planner.close}>
+            <IconClose size={20} />
+          </button>
+        )}
+      </header>
 
           <div className="search-input-wrap">
             <IconSearch size={18} className="search-input-icon" />
@@ -149,8 +163,8 @@ export function RecipeSearchModal({ initialMealType, onClose, onSelect }: Props)
                   key={recipe.id}
                   type="button"
                   className={`recipe-search-item ${selectedId === recipe.id ? 'selected' : ''}`}
-                  onClick={() => setSelectedId(recipe.id)}
-                  onDoubleClick={() => onSelect(recipe.id)}
+                  onClick={() => { setSelectedId(recipe.id); setPortions(1); }}
+                  onDoubleClick={() => onSelect(recipe.id, portions)}
                 >
                   <span className="recipe-search-emoji" aria-hidden>
                     {recipeEmoji(recipe.id, recipe.mealType)}
@@ -173,19 +187,67 @@ export function RecipeSearchModal({ initialMealType, onClose, onSelect }: Props)
             )}
           </div>
 
-          <footer className="modal-footer recipe-search-footer">
-            <button type="button" className="btn-text" onClick={() => selectedId && setViewRecipeId(selectedId)} disabled={!selectedId}>
-              {t.planner.viewRecipe}
-            </button>
-            <button
-              type="button"
-              className="btn-primary btn-primary--inline"
-              disabled={!selectedId}
-              onClick={() => selectedId && onSelect(selectedId)}
-            >
-              {t.planner.apply}
-            </button>
+          <footer className="modal-footer recipe-search-footer recipe-search-footer--portions">
+            <div className="recipe-add-portion-panel">
+              {selectedRecipe && (
+                <p className="recipe-serving-hint">
+                  {t.planner.perServingWeight.replace('{n}', String(getRecipeServingWeightG(selectedRecipe.id)))}
+                  {selectedRecipe.servings != null && selectedRecipe.servings > 1 && (
+                    <> · {t.planner.recipeYield.replace('{n}', String(selectedRecipe.servings))}</>
+                  )}
+                </p>
+              )}
+              <PortionStepper
+                portions={portions}
+                onChange={setPortions}
+                weightG={previewWeightG}
+                disabled={!selectedId}
+              />
+              {previewNutrients && (
+                <NutrientSummary nutrients={previewNutrients} inline />
+              )}
+            </div>
+            <div className="recipe-search-footer-actions">
+              <button type="button" className="btn-text" onClick={() => selectedId && setViewRecipeId(selectedId)} disabled={!selectedId}>
+                {t.planner.viewRecipe}
+              </button>
+              <button
+                type="button"
+                className="btn-primary btn-primary--inline"
+                disabled={!selectedId}
+                onClick={() => selectedId && onSelect(selectedId, portions)}
+              >
+                {t.planner.apply}
+              </button>
+            </div>
           </footer>
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <>
+        <div className="recipe-search-embedded">{content}</div>
+        {viewRecipeId && (
+          <RecipeDetailModal
+            recipeId={viewRecipeId}
+            onClose={() => setViewRecipeId(null)}
+            onAdd={
+              selectedId === viewRecipeId
+                ? () => { onSelect(viewRecipeId, portions); setViewRecipeId(null); }
+                : () => { onSelect(viewRecipeId, portions); onClose(); }
+            }
+          />
+        )}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="modal-overlay" onClick={onClose} role="presentation">
+        <div className="modal recipe-search-modal" onClick={(e) => e.stopPropagation()} role="dialog">
+          {content}
         </div>
       </div>
 
@@ -195,8 +257,8 @@ export function RecipeSearchModal({ initialMealType, onClose, onSelect }: Props)
           onClose={() => setViewRecipeId(null)}
           onAdd={
             selectedId === viewRecipeId
-              ? () => { onSelect(viewRecipeId); setViewRecipeId(null); }
-              : () => { onSelect(viewRecipeId); onClose(); }
+              ? () => { onSelect(viewRecipeId, portions); setViewRecipeId(null); }
+              : () => { onSelect(viewRecipeId, portions); onClose(); }
           }
         />
       )}

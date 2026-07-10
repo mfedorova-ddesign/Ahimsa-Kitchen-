@@ -261,6 +261,51 @@ export const productTexts: Record<string, Record<Locale, ProductText>> = {
     ru: { name: 'Свёкла (варёная)', portion: '1 стакан (170 г)' },
     uk: { name: 'Буряк (варений)', portion: '1 склянка (170 г)' },
   },
+  peanuts: {
+    en: { name: 'Peanuts', portion: '30 g (handful)' },
+    ru: { name: 'Арахис', portion: '30 г (горсть)' },
+    uk: { name: 'Арахіс', portion: '30 г (жменя)' },
+  },
+  pistachios: {
+    en: { name: 'Pistachios', portion: '30 g (handful)' },
+    ru: { name: 'Фисташки', portion: '30 г (горсть)' },
+    uk: { name: 'Фісташки', portion: '30 г (жменя)' },
+  },
+  cashews: {
+    en: { name: 'Cashews', portion: '30 g (handful)' },
+    ru: { name: 'Кешью', portion: '30 г (горсть)' },
+    uk: { name: 'Кеш\'ю', portion: '30 г (жменя)' },
+  },
+  raisins: {
+    en: { name: 'Raisins', portion: '40 g (handful)' },
+    ru: { name: 'Изюм', portion: '40 г (горсть)' },
+    uk: { name: 'Ізюм', portion: '40 г (жменя)' },
+  },
+  'dried-apricots': {
+    en: { name: 'Dried apricots', portion: '40 g (6 halves)' },
+    ru: { name: 'Курага', portion: '40 г (6 половинок)' },
+    uk: { name: 'Курага', portion: '40 г (6 половинок)' },
+  },
+  dates: {
+    en: { name: 'Medjool dates', portion: '2 pcs (48 g)' },
+    ru: { name: 'Финики (меджул)', portion: '2 шт. (48 г)' },
+    uk: { name: 'Фініки (меджул)', portion: '2 шт. (48 г)' },
+  },
+  'dark-chocolate-85': {
+    en: { name: 'Dark chocolate 85%', portion: '30 g (3–4 squares)' },
+    ru: { name: 'Тёмный шоколад 85%', portion: '30 г (3–4 дольки)' },
+    uk: { name: 'Темний шоколад 85%', portion: '30 г (3–4 дольки)' },
+  },
+  'lentil-crispbread': {
+    en: { name: 'Lentil crispbread', portion: '2 pcs (20 g)' },
+    ru: { name: 'Чечевичные хлебцы', portion: '2 шт. (20 г)' },
+    uk: { name: 'Сочевичні хлібці', portion: '2 шт. (20 г)' },
+  },
+  cucumber: {
+    en: { name: 'Cucumber', portion: '1 medium (150 g)' },
+    ru: { name: 'Огурец', portion: '1 средний (150 г)' },
+    uk: { name: 'Огірок', portion: '1 середній (150 г)' },
+  },
 };
 
 export function getProductText(productId: string, locale: Locale): ProductText {

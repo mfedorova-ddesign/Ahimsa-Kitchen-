@@ -4,25 +4,39 @@ import { generateMealPlan } from '../utils/mealGenerator';
 import type { NutrientFocus } from '../types';
 import {
   addDish,
+  addProduct,
   copyDay,
   createEmptyPlanner,
   duplicateDish,
   mealPlanToPlanner,
+  migratePlannerSlots,
   moveDish,
   removeDish,
   setPeriod,
+  updateDishPortions,
 } from '../utils/plannerOps';
 
-const PLANNER_KEY = 'ahimsa-kitchen-planner-v6';
+const PLANNER_KEY = 'ahimsa-kitchen-planner-v7';
+const LEGACY_PLANNER_KEY = 'ahimsa-kitchen-planner-v6';
 
 function loadPlanner(): PlannerState {
-  try {
-    const raw = localStorage.getItem(PLANNER_KEY);
-    if (raw) {
-      const p = JSON.parse(raw) as PlannerState;
-      if (p?.days?.length && p.period) return p;
-    }
-  } catch { /* ignore */ }
+  for (const key of [PLANNER_KEY, LEGACY_PLANNER_KEY]) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        const p = JSON.parse(raw) as PlannerState;
+        if (p?.days?.length && p.period) {
+          return {
+            ...p,
+            days: p.days.map((day) => ({
+              ...day,
+              slots: migratePlannerSlots(day.slots),
+            })),
+          };
+        }
+      }
+    } catch { /* ignore */ }
+  }
   return createEmptyPlanner('day');
 }
 
@@ -37,8 +51,31 @@ export function usePlanner() {
     setPlanner((p) => setPeriod(p, period));
   }, []);
 
-  const addRecipe = useCallback((dayIndex: number, mealType: MealType, recipeId: string) => {
-    setPlanner((p) => addDish(p, dayIndex, mealType, recipeId));
+  const addRecipe = useCallback((
+    dayIndex: number,
+    mealType: MealType,
+    recipeId: string,
+    portions = 1,
+  ) => {
+    setPlanner((p) => addDish(p, dayIndex, mealType, recipeId, portions));
+  }, []);
+
+  const addProductToMeal = useCallback((
+    dayIndex: number,
+    mealType: MealType,
+    productId: string,
+    portions = 1,
+  ) => {
+    setPlanner((p) => addProduct(p, dayIndex, mealType, productId, portions));
+  }, []);
+
+  const setDishPortions = useCallback((
+    dayIndex: number,
+    mealType: MealType,
+    dishId: string,
+    portions: number,
+  ) => {
+    setPlanner((p) => updateDishPortions(p, dayIndex, mealType, dishId, portions));
   }, []);
 
   const deleteDish = useCallback((dayIndex: number, mealType: MealType, dishId: string) => {
@@ -75,6 +112,8 @@ export function usePlanner() {
     planner,
     setPlannerPeriod,
     addRecipe,
+    addProductToMeal,
+    setDishPortions,
     deleteDish,
     copyDish,
     dragDish,

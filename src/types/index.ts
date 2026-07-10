@@ -79,6 +79,8 @@ export interface Recipe {
   perServing?: Nutrients;
   prepTimeMin?: number;
   servings?: number;
+  /** Approximate weight of one serving in grams */
+  servingWeightG?: number;
 }
 
 export interface Nutrients {
@@ -92,11 +94,10 @@ export interface Nutrients {
   d3Mcg: number;
 }
 
-/** One added recipe instance in the planner */
-export interface PlannedDish {
-  id: string;
-  recipeId: string;
-}
+/** One recipe or product instance in the planner */
+export type PlannedDish =
+  | { id: string; kind: 'recipe'; recipeId: string; portions: number }
+  | { id: string; kind: 'product'; productId: string; portions: number };
 
 export type MealSlots = Record<MealType, PlannedDish[]>;
 
@@ -121,12 +122,16 @@ export interface RecipeSearchFilters {
   tags: RecipeFilterTag[];
 }
 
-export interface DragPayload {
+export type DragPayload = {
   dishId: string;
-  recipeId: string;
   fromDay: number;
   fromMeal: MealType;
-}
+} & (
+  | { kind: 'recipe'; recipeId: string; portions: number }
+  | { kind: 'product'; productId: string; portions: number }
+);
+
+export type ProductCategoryFilter = ProductCategory | 'all';
 
 export interface Meal {
   id: string;
